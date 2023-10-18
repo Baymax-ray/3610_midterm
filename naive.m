@@ -1,3 +1,6 @@
+function [I_G1,I_G2,I_G3,V_I_G1,V_I_G2,V_I_G3,D_G1,D_G2,D_G3,V_D_G1,V_D_G2,V_D_G3]=naive(VDR,VIR)
+%VDR---vaccine effect on death rate
+%VIR---vaccine effect on infection rate
 %% initial parameters
 P_tot=107000;
 V=3500;
@@ -34,18 +37,15 @@ DR_G1=0.001;
 DR_G2=0.18;
 DR_G3=0.02;
 %infection rate
-IR_G1toG1=0.18; 
-IR_G1toG2=0.28; 
-IR_G1toG3=0.18; 
-IR_G2toG1=0.17; 
-IR_G2toG2=0.25; 
-IR_G2toG3=0.17; 
-IR_G3toG1=0.08; %the ratio of parents to children : children to parents is about 3:7
-IR_G3toG2=0.28; 
-IR_G3toG3=0.18; 
-
-VDR=0.1; %vaccine effect on death rate
-VIR=0.3; %vaccine effect on infection rate
+IR_G1toG1=0.18*2; 
+IR_G1toG2=0.28*2; 
+IR_G1toG3=0.18*2; 
+IR_G2toG1=0.17*2; 
+IR_G2toG2=0.25*2; 
+IR_G2toG3=0.17*2; 
+IR_G3toG1=0.08*2; %the ratio of parents to children : children to parents is about 3:7
+IR_G3toG2=0.28*2; 
+IR_G3toG3=0.18*2; 
 
 %recover days
 R_G=10; %assume everyone is no longer contagious after 10 days
@@ -55,23 +55,26 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
 
     %give vaccine proportion to each group, assume the vaccine is evenly distributed each day
     temp=P_G1+P_G2+P_G3;
+    temp1=(V/DinM)*P_G1/temp;
+    temp2=(V/DinM)*P_G2/temp;
+    temp3=(V/DinM)*P_G3/temp;
+    if temp1>P_G1
+        temp1=P_G1;
+    end
+    if temp2>P_G2
+        temp2=P_G2;
+    end
+    if temp3>P_G3
+        temp3=P_G3;
+    end
 
-    V_P_G1=V_P_G1+(V/DinM)*P_G1/temp;
-    V_P_G2=V_P_G2+(V/DinM)*P_G2/temp;
-    V_P_G3=V_P_G3+(V/DinM)*P_G3/temp;
+    V_P_G1=V_P_G1+temp1;
+    V_P_G2=V_P_G2+temp2;
+    V_P_G3=V_P_G3+temp3;
 
-    P_G1=P_G1-(V/DinM)*P_G1/temp;
-    if P_G1<0
-        P_G1=0;
-    end
-    P_G2=P_G2-(V/DinM)*P_G2/temp;
-    if P_G2<0
-        P_G2=0;
-    end
-    P_G3=P_G3-(V/DinM)*P_G3/temp;
-    if P_G3<0
-        P_G3=0;
-    end
+    P_G1=P_G1-temp1;
+    P_G2=P_G2-temp2;
+    P_G3=P_G3-temp3;
 
     %get infected
     startIndex = max(1, numel(I_G1) - R_G+1);
@@ -128,56 +131,4 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
     V_D_G2=[V_D_G2 VDR*DR_G2*V_I_G2(end)];
     V_D_G3=[V_D_G3 VDR*DR_G3*V_I_G3(end)];
 end
-
-%% plot result
-% plot infected population per day
-figure(1)
-plot(I_G1+I_G2+I_G3+V_I_G1+V_I_G2+V_I_G3,"Color",[83 81 84]./255)
-hold on
-plot(I_G1+V_I_G1,"Color",[57 106 177]./255)
-plot(I_G2+V_I_G2,"Color",[204 37 41]./255)
-plot(I_G3+V_I_G3,"Color",[62 150 81]./255)
-xlabel('days')
-ylabel('population')
-title('new infected population at each day')
-legend('total infected population','infected population in group 1','infected population in group 2','infected population in group 3')
-hold off
-
-% plot total dead population per day
-figure(2)
-plot(D_G1+D_G2+D_G3+V_D_G1+V_D_G2+V_D_G3,"Color",[83 81 84]./255)
-hold on
-plot(D_G1+V_D_G1,"Color",[57 106 177]./255)
-plot(D_G2+V_D_G2,"Color",[204 37 41]./255)
-plot(D_G3+V_D_G3,"Color",[62 150 81]./255)
-xlabel('days')
-ylabel('population')
-title('new dead population at each day')
-legend('total dead population','dead population in group 1','dead population in group 2','dead population in group 3')
-hold off
-
-% plot accumulated infected population
-figure(3)
-plot(cumsum(I_G1+I_G2+I_G3+V_I_G1+V_I_G2+V_I_G3),"Color",[83 81 84]./255)
-hold on
-plot(cumsum(I_G1+V_I_G1),"Color",[57 106 177]./255)
-plot(cumsum(I_G2+V_I_G2),"Color",[204 37 41]./255)
-plot(cumsum(I_G3+V_I_G3),"Color",[62 150 81]./255)
-xlabel('days')
-ylabel('population')
-title('accumulated infected population')
-legend('total infected population','infected population in group 1','infected population in group 2','infected population in group 3')
-hold off
-
-% plot accumulated dead population
-figure(4)
-plot(cumsum(D_G1+D_G2+D_G3+V_D_G1+V_D_G2+V_D_G3),"Color",[83 81 84]./255)
-hold on
-plot(cumsum(D_G1+V_D_G1),"Color",[57 106 177]./255)
-plot(cumsum(D_G2+V_D_G2),"Color",[204 37 41]./255)
-plot(cumsum(D_G3+V_D_G3),"Color",[62 150 81]./255)
-xlabel('days')
-ylabel('population')
-title('accumulated dead population')
-legend('total dead population','dead population in group 1','dead population in group 2','dead population in group 3')
-hold off
+end
