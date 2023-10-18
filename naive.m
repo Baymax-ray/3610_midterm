@@ -1,13 +1,8 @@
-function [I_G1,I_G2,I_G3,V_I_G1,V_I_G2,V_I_G3,D_G1,D_G2,D_G3,V_D_G1,V_D_G2,V_D_G3]=naive(VDR,VIR)
-%VDR---vaccine effect on death rate
-%VIR---vaccine effect on infection rate
-%% initial parameters
-P_tot=107000;
-V=3500;
-DinM=30;% 30 days in a month
-iniP_G1=P_tot*0.137; %<18
-iniP_G2=P_tot*0.164; %>65
-iniP_G3=P_tot-iniP_G1-iniP_G2; %18-65
+function [I_G1,I_G2,I_G3,V_I_G1,V_I_G2,V_I_G3,D_G1,D_G2,D_G3,V_D_G1,V_D_G2,V_D_G3]=naive(VDR,VIR,V,DinM,iniP_G1,iniP_G2,iniP_G3,DR_G1,DR_G2,DR_G3,IR_G1toG1,IR_G1toG2,IR_G1toG3,IR_G2toG1,IR_G2toG2,IR_G2toG3,IR_G3toG1,IR_G3toG2,IR_G3toG3,R_G)
+% people always acccept vaccine
+% no priority
+
+%% 
 % unvaccinated uninfected population
 P_G1=iniP_G1;
 P_G2=iniP_G2;
@@ -32,23 +27,6 @@ D_G3=[0];
 V_D_G1=[0];
 V_D_G2=[0];
 V_D_G3=[0];
-%death rate
-DR_G1=0.001;
-DR_G2=0.18;
-DR_G3=0.02;
-%infection rate
-IR_G1toG1=0.18*2; 
-IR_G1toG2=0.28*2; 
-IR_G1toG3=0.18*2; 
-IR_G2toG1=0.17*2; 
-IR_G2toG2=0.25*2; 
-IR_G2toG3=0.17*2; 
-IR_G3toG1=0.08*2; %the ratio of parents to children : children to parents is about 3:7
-IR_G3toG2=0.28*2; 
-IR_G3toG3=0.18*2; 
-
-%recover days
-R_G=10; %assume everyone is no longer contagious after 10 days
 
 %% time to stimulate
 while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && (P_G1+P_G2+P_G3)>0
