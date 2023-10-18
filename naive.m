@@ -48,9 +48,7 @@ VDR=0.1; %vaccine effect on death rate
 VIR=0.3; %vaccine effect on infection rate
 
 %recover days
-R_G1=10;
-R_G2=20; %assume old people recover slower
-R_G3=10;
+R_G=10; %assume everyone is no longer contagious after 10 days
 
 %% time to stimulate
 while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && (P_G1+P_G2+P_G3)>0
@@ -76,13 +74,16 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
     end
 
     %get infected
-    new_I_G1=(P_G1/iniP_G1)*(IR_G1toG1*I_G1(end)+IR_G2toG1*I_G2(end)+IR_G3toG1*I_G3(end)+VIR*(V_I_G1(end)*IR_G1toG1+V_I_G2(end)*IR_G2toG1+V_I_G3(end)*IR_G3toG1));
-    new_I_G2=(P_G2/iniP_G2)*(IR_G1toG2*I_G1(end)+IR_G2toG2*I_G2(end)+IR_G3toG2*I_G3(end)+VIR*(V_I_G1(end)*IR_G1toG2+V_I_G2(end)*IR_G2toG2+V_I_G3(end)*IR_G3toG2));
-    new_I_G3=(P_G3/iniP_G3)*(IR_G1toG3*I_G1(end)+IR_G2toG3*I_G2(end)+IR_G3toG3*I_G3(end)+VIR*(V_I_G1(end)*IR_G1toG3+V_I_G2(end)*IR_G2toG3+V_I_G3(end)*IR_G3toG3));
+    startIndex = max(1, numel(I_G1) - R_G+1);
+    
+    %sumLast10 = sum(arr(startIndex:end));
+    new_I_G1=(P_G1/iniP_G1)*(IR_G1toG1*sum(I_G1(startIndex:end))+IR_G2toG1*sum(I_G2(startIndex:end))+IR_G3toG1*sum(I_G3(startIndex:end))+VIR*(sum(V_I_G1(startIndex:end))*IR_G1toG1+sum(V_I_G2(startIndex:end))*IR_G2toG1+sum(V_I_G3(startIndex:end))*IR_G3toG1));
+    new_I_G2=(P_G2/iniP_G2)*(IR_G1toG2*sum(I_G1(startIndex:end))+IR_G2toG2*sum(I_G2(startIndex:end))+IR_G3toG2*sum(I_G3(startIndex:end))+VIR*(sum(V_I_G1(startIndex:end))*IR_G1toG2+sum(V_I_G2(startIndex:end))*IR_G2toG2+sum(V_I_G3(startIndex:end))*IR_G3toG2));
+    new_I_G3=(P_G3/iniP_G3)*(IR_G1toG3*sum(I_G1(startIndex:end))+IR_G2toG3*sum(I_G2(startIndex:end))+IR_G3toG3*sum(I_G3(startIndex:end))+VIR*(sum(V_I_G1(startIndex:end))*IR_G1toG3+sum(V_I_G2(startIndex:end))*IR_G2toG3+sum(V_I_G3(startIndex:end))*IR_G3toG3));
 
-    new_V_I_G1=VIR*(V_P_G1/iniP_G1)*(IR_G1toG1*I_G1(end)+IR_G2toG1*I_G2(end)+IR_G3toG1*I_G3(end)+VIR*(V_I_G1(end)*IR_G1toG1+V_I_G2(end)*IR_G2toG1+V_I_G3(end)*IR_G3toG1));
-    new_V_I_G2=VIR*(V_P_G2/iniP_G2)*(IR_G1toG2*I_G1(end)+IR_G2toG2*I_G2(end)+IR_G3toG2*I_G3(end)+VIR*(V_I_G1(end)*IR_G1toG2+V_I_G2(end)*IR_G2toG2+V_I_G3(end)*IR_G3toG2));
-    new_V_I_G3=VIR*(V_P_G3/iniP_G3)*(IR_G1toG3*I_G1(end)+IR_G2toG3*I_G2(end)+IR_G3toG3*I_G3(end)+VIR*(V_I_G1(end)*IR_G1toG3+V_I_G2(end)*IR_G2toG3+V_I_G3(end)*IR_G3toG3));
+    new_V_I_G1=VIR*(V_P_G1/iniP_G1)*(IR_G1toG1*sum(I_G1(startIndex:end))+IR_G2toG1*sum(I_G2(startIndex:end))+IR_G3toG1*sum(I_G3(startIndex:end))+VIR*(sum(V_I_G1(startIndex:end))*IR_G1toG1+sum(V_I_G2(startIndex:end))*IR_G2toG1+sum(V_I_G3(startIndex:end))*IR_G3toG1));
+    new_V_I_G2=VIR*(V_P_G2/iniP_G2)*(IR_G1toG2*sum(I_G1(startIndex:end))+IR_G2toG2*sum(I_G2(startIndex:end))+IR_G3toG2*sum(I_G3(startIndex:end))+VIR*(sum(V_I_G1(startIndex:end))*IR_G1toG2+sum(V_I_G2(startIndex:end))*IR_G2toG2+sum(V_I_G3(startIndex:end))*IR_G3toG2));
+    new_V_I_G3=VIR*(V_P_G3/iniP_G3)*(IR_G1toG3*sum(I_G1(startIndex:end))+IR_G2toG3*sum(I_G2(startIndex:end))+IR_G3toG3*sum(I_G3(startIndex:end))+VIR*(sum(V_I_G1(startIndex:end))*IR_G1toG3+sum(V_I_G2(startIndex:end))*IR_G2toG3+sum(V_I_G3(startIndex:end))*IR_G3toG3));
 
     if new_I_G1>P_G1
         new_I_G1=P_G1;
@@ -118,7 +119,7 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
     V_I_G2=[V_I_G2 new_V_I_G2];
     V_I_G3=[V_I_G3 new_V_I_G3];
 
-    %get dead
+    %get dead, assume all death happend on the first day of infection
     D_G1=[D_G1 DR_G1*I_G1(end)];
     D_G2=[D_G2 DR_G2*I_G2(end)];
     D_G3=[D_G3 DR_G3*I_G3(end)];
@@ -127,3 +128,8 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
     V_D_G2=[V_D_G2 VDR*DR_G2*V_I_G2(end)];
     V_D_G3=[V_D_G3 VDR*DR_G3*V_I_G3(end)];
 end
+
+%% plot result
+% plot total infected population per day
+figure(1)
+plot(I_G1+I_G2+I_G3+V_I_G1+V_I_G2+V_I_G3)
