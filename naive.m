@@ -133,3 +133,6 @@ end
 % plot total infected population per day
 figure(1)
 plot(I_G1+I_G2+I_G3+V_I_G1+V_I_G2+V_I_G3)
+hold on
+xlabel('days')
+ylabel('new infected population at each day')
