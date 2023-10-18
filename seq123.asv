@@ -1,4 +1,4 @@
-function [I_G1,I_G2,I_G3,V_I_G1,V_I_G2,V_I_G3,D_G1,D_G2,D_G3,V_D_G1,V_D_G2,V_D_G3,NV_P_G1,NV_P_G2,NV_P_G3]=seq123(VDR,VIR,V,DinM,iniP_G1,iniP_G2,iniP_G3,DR_G1,DR_G2,DR_G3,IR_G1toG1,IR_G1toG2,IR_G1toG3,IR_G2toG1,IR_G2toG2,IR_G2toG3,IR_G3toG1,IR_G3toG2,IR_G3toG3,R_G,FLW)
+function [I_G1,I_G2,I_G3,V_I_G1,V_I_G2,V_I_G3,D_G1,D_G2,D_G3,V_D_G1,V_D_G2,V_D_G3,NV_P_G1,NV_P_G2,NV_P_G3]=naive(VDR,VIR,V,DinM,iniP_G1,iniP_G2,iniP_G3,DR_G1,DR_G2,DR_G3,IR_G1toG1,IR_G1toG2,IR_G1toG3,IR_G2toG1,IR_G2toG2,IR_G2toG3,IR_G3toG1,IR_G3toG2,IR_G3toG3,R_G,FLW)
 % people always acccept vaccine
 % prioritize kids>old>mid
 
@@ -27,10 +27,7 @@ D_G3=[0];
 V_D_G1=[0];
 V_D_G2=[0];
 V_D_G3=[0];
-% total vaccinated population
-NV_P_G1=[0];
-NV_P_G2=[0];
-NV_P_G3=[0];
+
 FLW_V=false;
 
 %% time to stimulate
@@ -39,18 +36,16 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
     %give vaccine first to kids, then old, then mid, assume the vaccine is evenly distributed each day
     %give to FLW first, assume FLW belongs to G3
     D_amount=V/DinM;
-    temp1=0;
-    temp2=0;
     temp3=0;
     if FLW_V==false
-        if D_amount>=FLW
+        if D_amount>FLW
             D_amount=D_amount-FLW;
             temp3=FLW;
             FLW_V=true;
         else
             temp3=D_amount;
-            FLW=FLW-D_amount;
             D_amount=0;
+            FLW=FLW-D_amount;
         end
     end
     if P_G1>0 && D_amount>0 %give vaccine to g1 first
@@ -64,21 +59,15 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
     elseif P_G2>0 && D_amount>0
         if D_amount>P_G2 %we have enough vaccine to give to g2
             D_amount=D_amount-P_G2;
-            temp2=P_G2;
+            temp1=P_G2;
         else
-            temp2=D_amount;
-            D_amount=0;
-        end
-    elseif P_G3>0 && D_amount>0
-        if D_amount>P_G3 %we have enough vaccine to give to g3
-            D_amount=D_amount-P_G3;
-            temp3=temp3+P_G3;
-        else
-            temp3=temp3+D_amount;
+            temp1=D_amount;
             D_amount=0;
         end
     end
     
+
+
 
     V_P_G1=V_P_G1+temp1;
     V_P_G2=V_P_G2+temp2;
