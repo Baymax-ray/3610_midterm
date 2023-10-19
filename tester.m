@@ -22,16 +22,18 @@ IR_G3toG2=0.28*2;
 IR_G3toG3=0.12*2; 
 
 %recover days
-R_G=3; %assume everyone is no longer contagious after 10 days
+R_G=3; %assume everyone is no longer contagious after 3 days
 %VDR---vaccine effect on death rate
 %VIR---vaccine effect on infection rate
-VDR=0.1;
-VIR=0.3;
+VDR=0.999;
+VIR=0.458;
 FLW = 436; %unvaccinated front line workers
 
 
-
-potention_ra12=logspace(-4,4,20);
+%potential_VIR=linspace(0.9,1,10);
+potention_ra12=logspace(-4,4,40);
+%for j=1:length(potential_VIR)
+    %VIR=potential_VIR(j);
 %%
 total_death=zeros(length(potention_ra12),1);
 total_death_G1=zeros(length(potention_ra12),1);
@@ -39,6 +41,7 @@ total_death_G2=zeros(length(potention_ra12),1);
 total_death_G3=zeros(length(potention_ra12),1);
 total_infected=zeros(length(potention_ra12),1);
 for i=1:length(potention_ra12)
+    
     ra12=potention_ra12(i);
     [I_G1,I_G2,I_G3,V_I_G1,V_I_G2,V_I_G3,D_G1,D_G2,D_G3,V_D_G1,V_D_G2,V_D_G3,NV_P_G1,NV_P_G2,NV_P_G3]=ratio12(VDR,VIR,V,DinM,iniP_G1,iniP_G2,iniP_G3,DR_G1,DR_G2,DR_G3,IR_G1toG1,IR_G1toG2,IR_G1toG3,IR_G2toG1,IR_G2toG2,IR_G2toG3,IR_G3toG1,IR_G3toG2,IR_G3toG3,R_G,FLW,ra12);
     cum_death=cumsum(V_D_G1+V_D_G2+V_D_G3+D_G1+D_G2+D_G3);
@@ -88,6 +91,7 @@ set(gca, 'XScale', 'log');
 xlabel('ratio of kid:old')
 ylabel('loss of expected life years')
 title('loss of expected life years vs ratio of kid:old')
+%end
 
 
 
