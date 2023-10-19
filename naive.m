@@ -12,9 +12,9 @@ V_P_G1=0; %no one is vaccinated at the beginning
 V_P_G2=0;
 V_P_G3=0;
 % unvaccinated infected population
-I_G1=[5]; %initial infected population
-I_G2=[5];
-I_G3=[5];
+I_G1=[1]; %initial infected population
+I_G2=[1];
+I_G3=[1];
 % vaccinated infected population
 V_I_G1=[0];
 V_I_G2=[0];
