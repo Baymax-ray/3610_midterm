@@ -12,9 +12,9 @@ V_P_G1=0; %no one is vaccinated at the beginning
 V_P_G2=0;
 V_P_G3=0;
 % unvaccinated infected population
-I_G1=[5]; %initial infected population
-I_G2=[5];
-I_G3=[5];
+I_G1=[1]; %initial infected population
+I_G2=[1];
+I_G3=[1];
 % vaccinated infected population
 V_I_G1=[0];
 V_I_G2=[0];
@@ -61,7 +61,8 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
             temp1=D_amount;
             D_amount=0;
         end
-    elseif P_G2>0 && D_amount>0
+    end
+    if P_G2>0 && D_amount>0
         if D_amount>P_G2 %we have enough vaccine to give to g2
             D_amount=D_amount-P_G2;
             temp2=P_G2;
@@ -69,7 +70,8 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
             temp2=D_amount;
             D_amount=0;
         end
-    elseif P_G3>0 && D_amount>0
+    end
+    if P_G3>0 && D_amount>0
         if D_amount>P_G3 %we have enough vaccine to give to g3
             D_amount=D_amount-P_G3;
             temp3=temp3+P_G3;

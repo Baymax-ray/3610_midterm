@@ -1,11 +1,18 @@
-function monteCarloSimulation(population, vaccinesPerMonth, deathRateByAge, infectionRateByAge)
+function monteCarloSimulation()
     population = 107000; % Total population
     vaccinesPerMonth = 3500; % Number of vaccines to distribute per month
+    % Adjusted death and infection rates for each age group
     deathRateByAge = [0.05, 0.02, 0.01]; % Death rate by age group
     infectionRateByAge = [0.1, 0.05, 0.02]; % Infection rate by age group
 
     numAgeGroups = numel(deathRateByAge);
 
+    % Calculate the initial population for each age group
+    iniP_G1 = population * 0.15; % 15% of the total population
+    iniP_G2 = population * 0.10; % 10% of the total population
+    iniP_G3 = population * 0.75; % 75% of the total population
+
+    % Calculate the number of months required for vaccination
     numMonths = ceil(population / vaccinesPerMonth);
 
     totalPeopleAffected = zeros(1, numMonths);
@@ -37,7 +44,7 @@ function monteCarloSimulation(population, vaccinesPerMonth, deathRateByAge, infe
         % Simulate the disease spread and vaccination for each age group
         for ageGroup = orderOfVaccination
             % Calculate the number of susceptible people in this age group
-            susceptible = floor(population / numAgeGroups);
+            susceptible = floor(eval(['iniP_G' num2str(ageGroup)]));
 
             % Calculate the number of infected people based on infection rate
             infected = floor(susceptible * infectionRateByAge(ageGroup));
@@ -61,10 +68,8 @@ function monteCarloSimulation(population, vaccinesPerMonth, deathRateByAge, infe
             peopleVaccinatedByAge(ageGroup) = peopleToVaccinate;
 
             % Update total population, vaccines available, and health status
-            population = population - affected;
+            eval(['iniP_G' num2str(ageGroup) ' = iniP_G' num2str(ageGroup) ' - affected;']);
             vaccinesAvailable = vaccinesAvailable - peopleToVaccinate;
-            % Remove ill people from population (they can't be vaccinated)
-            population = population - affected;
 
             % Update cumulative totals
             cumulativePeopleAffected = cumulativePeopleAffected + affected;

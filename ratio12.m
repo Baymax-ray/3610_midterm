@@ -1,7 +1,6 @@
-function [I_G1,I_G2,I_G3,V_I_G1,V_I_G2,V_I_G3,D_G1,D_G2,D_G3,V_D_G1,V_D_G2,V_D_G3,NV_P_G1,NV_P_G2,NV_P_G3]=seq213(VDR,VIR,V,DinM,iniP_G1,iniP_G2,iniP_G3,DR_G1,DR_G2,DR_G3,IR_G1toG1,IR_G1toG2,IR_G1toG3,IR_G2toG1,IR_G2toG2,IR_G2toG3,IR_G3toG1,IR_G3toG2,IR_G3toG3,R_G,FLW)
+function [I_G1,I_G2,I_G3,V_I_G1,V_I_G2,V_I_G3,D_G1,D_G2,D_G3,V_D_G1,V_D_G2,V_D_G3,NV_P_G1,NV_P_G2,NV_P_G3]=ratio12(VDR,VIR,V,DinM,iniP_G1,iniP_G2,iniP_G3,DR_G1,DR_G2,DR_G3,IR_G1toG1,IR_G1toG2,IR_G1toG3,IR_G2toG1,IR_G2toG2,IR_G2toG3,IR_G3toG1,IR_G3toG2,IR_G3toG3,R_G,FLW,ratio12)
 % people always acccept vaccine
-% prioritize old>kid>mid
-
+% prioritize kids and old, with a ratio of kid/old=ratio12
 %% initialize parameters
 % unvaccinated uninfected population
 P_G1=iniP_G1;
@@ -53,21 +52,35 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
             D_amount=0;
         end
     end
-    if P_G2>0 && D_amount>0 %give vaccine to g1 first
-        if D_amount>P_G2 %we have enough vaccine to give to g1
-            D_amount=D_amount-P_G2;
+    if D_amount>0 %give vaccine to g1 and g2 first
+        temp2=D_amount/(1+ratio12);
+        temp1=D_amount-temp2;
+        D_amount=0;
+        if temp1>P_G1 %too many for g1
+            D_amount=D_amount+temp1-P_G1;
+            temp1=P_G1;
+        end
+        if temp2>P_G2 %too many for g2
+            D_amount=D_amount+temp2-P_G2;
             temp2=P_G2;
+        end
+
+    end
+    if D_amount>0 && P_G1>temp1 %still have more vaccine to give
+        if D_amount>P_G1-temp1 %we have enough vaccine to give to g1
+            D_amount=D_amount-(P_G1-temp1);
+            temp1=temp1+(P_G1-temp1);
         else
-            temp2=D_amount;
+            temp1=temp1+D_amount;
             D_amount=0;
         end
     end
-    if P_G1>0 && D_amount>0
-        if D_amount>P_G1 %we have enough vaccine to give to g2
-            D_amount=D_amount-P_G1;
-            temp1=P_G1;
+    if D_amount>0 && P_G2>temp2
+        if D_amount>P_G2-temp2 %we have enough vaccine to give to g2
+            D_amount=D_amount-(P_G2-temp2);
+            temp2=temp2+(P_G2-temp2);
         else
-            temp1=D_amount;
+            temp2=temp2+D_amount;
             D_amount=0;
         end
     end
@@ -148,4 +161,3 @@ while (I_G1(end)+I_G2(end)+I_G3(end)+V_I_G1(end)+V_I_G2(end)+V_I_G3(end))>=0 && 
     V_D_G3=[V_D_G3 VDR*DR_G3*V_I_G3(end)];
 end
 end
-
